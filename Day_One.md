@@ -327,3 +327,18 @@ Expected: content-type: application/json
 
 
 
+Linkedln: https://www.linkedin.com/in/chinomso-george-daniel-pmp/
+Medium: https://medium.com/@chinomsogeorge123
+
+
+
+
+
+
+
+
+
+
+
+
+
