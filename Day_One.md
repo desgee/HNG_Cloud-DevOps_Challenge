@@ -2,14 +2,14 @@
 
 The HNG challenge is a fast-paced, fully remote bootcamp designed to find and develop the most talented software developers, Cloud & DevOps Engineers, designers, and digital experts across Africa and the world. It is a project-based program that simulates a real-world work environment through high-pressure tasks and team collaboration through stages 0 to 10.
 
-# Task Name
+## Task Name
 Stage 0 (DevOps) Linux Server Setup & Nginx Configuration
 Requirements / Task Brief
 You will provision a Linux server, install and configure Nginx to serve two different locations, and secure it with a valid SSL certificate. No Docker, no Compose, no automation tools — just a bare Linux server and your hands.
 
-# What You Must Do:
+### What You Must Do:
 
-# Server Setup
+## Server Setup
 Provision a Linux server (any cloud provider)
 Create a non-root user called hngdevops with sudo privileges
 Disable root SSH login
@@ -17,7 +17,7 @@ Disable password-based SSH authentication - key-based only
 Configure UFW to allow only ports 22, 80, and 443 (all other ports closed)
 
 
-# Nginx Configuration
+## Nginx Configuration
 
 Install Nginx and configure it to serve:
 GET / : static HTML page containing your HNG username as visible text
@@ -41,7 +41,7 @@ Configure Nginx to serve both endpoints over HTTPS
 HTTP requests must redirect to HTTPS with 301
 
 
-# Technical Requirements:
+### Technical Requirements:
 /api must return Content-Type: application/json and HTTP status 200
 username in JSON must match registered HNG username exactly (case-sensitive)
 HTTP→HTTPS redirect must be 301 (not 302)
@@ -64,9 +64,9 @@ HTTPS works on both endpoints
 HTTP redirects to HTTPS with 301
 No Docker/Compose/automation tools used
 
-# Note a public ssh key was given to me to add to my server
+### Note: a public ssh key was given to me to add to my server
 
-# Solution
+## Solution
 
 I already have an account with AWS and Azure so i provisioned my Linux server with AWS
 
@@ -82,39 +82,39 @@ HTTPS (443)
 
 I connected to my AWS remote server with the public ip using mobaxterm
 
-# Creating a Passwordless root user
+## Creating a Passwordless root user
 sudo useradd -m -s /bin/bash hngdevops
 
-# Add to sudo group
+## Add to sudo group
 sudo usermod -aG sudo hngdevops
 
-# Verify user exists
+## Verify user exists
 id hngdevops
 
-# Expected output:
+## Expected output:
 uid=1001(hngdevops) gid=1001(hngdevops) groups=1001(hngdevops),27(sudo)
 
-# Configuring Passwordless Sudo
+## Configuring Passwordless Sudo
 sudo visudo -f /etc/sudoers.d/hngdevops
 Add this exact line:
 hngdevops ALL=(ALL) NOPASSWD: /usr/sbin/sshd, /usr/sbin/ufw
 
 Ctrl+X → Y → Enter to save
 
-# Verify it saved correctly
+## Verify it saved correctly
 sudo cat /etc/sudoers.d/hngdevops
-# Expected output:
+## Expected output:
 hngdevops ALL=(ALL) NOPASSWD: /usr/sbin/sshd, /usr/sbin/ufw
 
-# To Add the public SSH Key given
+## To Add the public SSH Key given
 Switch to hngdevops user
 sudo su - hngdevops
 
-# Create .ssh directory
+## Create .ssh directory
 mkdir -p ~/.ssh
 chmod 700 ~/.ssh
 
-# Create authorized_keys file and paste the ssh key
+## Create authorized_keys file and paste the ssh key
 nano ~/.ssh/authorized_keys
 
 Paste the public ssh key here (should look like):
@@ -123,41 +123,41 @@ ssh eed AAAAB3NzaC1yc2EAAAADAQABAAAB... @key
 
 Ctrl+X → Y → Enter to save
 
-# Set correct permissions
+## Set correct permissions
 chmod 600 ~/.ssh/authorized_keys
 
-# Verify the key was saved
+## Verify the key was saved
 cat ~/.ssh/authorized_keys
 
-# Verify permissions are correct
+## Verify permissions are correct
 ls -la ~/.ssh/
 
-# Expected output should look like this:
+## Expected output should look like this:
 drwx------ 2 hngdevops hngdevops 4096 Apr 12 11:37 .
 drwxr-x--- 4 hngdevops hngdevops 4096 Apr 12 11:35 ..
 -rw------- 1 hngdevops hngdevops  136 Apr 12 11:37 authorized_keys
 
-# Now switch back to ubuntu user
+## Now switch back to ubuntu user
 exit
 
-# Then edit SSH config
+## Then edit SSH config
 sudo nano /etc/ssh/sshd_config
 
-# Find and update these lines:
+## Find and update these lines:
 PermitRootLogin no
 PasswordAuthentication no
 PubkeyAuthentication yes
 
-# Save and restart SSH
+## Save and restart SSH
 sudo systemctl restart ssh
 
-# Verify SSH is still running
+## Verify SSH is still running
 sudo systemctl status ssh
 
-# Expected Output:
+## Expected Output:
 Active: active (running) ✅
 
-# Configure Firewall (UFW)
+## Configure Firewall (UFW)
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
 sudo ufw allow 22/tcp
@@ -167,15 +167,15 @@ sudo ufw enable
 
 ## Note: Install firewall, if firewall is not installed already
 
-# Then verify
+## Then verify
 sudo ufw status verbose
 
-# Also Verify if Socket is Active
+## Also Verify if Socket is Active
 sudo systemctl status ssh.socket
 
 ![Firewall enabled](<firewall enabled.png>)
 
-# Summary 
+## Summary 
 🔒 Root login disabled
 🔑 Key-based SSH only
 🛡️ All ports closed except 22, 80, 443
@@ -184,22 +184,22 @@ sudo systemctl status ssh.socket
 
 ## Phase 2   Nginx Configuration
 ## Note: You should have a domain name ready, You'll need one for the Let's Encrypt SSL certificate.
-# Note: My domain is servimatch.online
+## Note: My domain is servimatch.online
 
-# Step 1 — Install Nginx
+## Step 1 — Install Nginx
 sudo apt update
 sudo apt install nginx -y
-# Verify Nginx is running
+## Verify Nginx is running
 sudo systemctl status nginx
 
-# Step 2 — Install Certbot
+## Step 2 — Install Certbot
 sudo apt install certbot python3-certbot-nginx -y
 
-# Step 3 — Configure Nginx First
+## Step 3 — Configure Nginx First
 Create the config file
 sudo nano /etc/nginx/sites-available/domain
 
-# Paste this configuration, edit and add your domain and preferred content
+## Paste this configuration, edit and add your domain and preferred content
 nginxserver {
     listen 80;
     server_name servimatch.online www.servimatch.online;
@@ -217,10 +217,10 @@ nginxserver {
     }
 }
 
-# To close the nano editor
+## To close the nano editor
    Ctrl+X → Y → Enter to save
 
-# Step 4 — Create the HTML Page
+## Step 4 — Create the HTML Page
 sudo mkdir -p /var/www/servimatch.online
 sudo nano /var/www/servimatch.online/index.html
 
@@ -240,30 +240,30 @@ Paste this, edit and add your desired content:
 Ctrl+X → Y → Enter to save
 
 ## Step 5 — Enable the Site
-# Enable site
+## Enable site
 sudo ln -s /etc/nginx/sites-available/servimatch.online /etc/nginx/sites-enabled/
 
-# Remove default site
+## Remove default site
 sudo rm /etc/nginx/sites-enabled/default
 
-# Test config
+## Test config
 sudo nginx -t
 
-# Reload Nginx
+## Reload Nginx
 sudo systemctl reload nginx
 
-# Step 6: Configure DNS Records on Your Domain Provider
+## Step 6: Configure DNS Records on Your Domain Provider
 Login to your domain provider and set the A record
 
-# Note @ means the root domain (servimatch.online) and www means www.servimatch.online
+## Note @ means the root domain (servimatch.online) and www means www.servimatch.online
 
 
-# Verify if DNS is propagated correctly
+## Verify if DNS is propagated correctly
 nslookup servimatch.online
 Expected output should show your EC2 public IP.
 or check online at https://dnschecker.org with your domain
 
-# Expected output:
+## Expected output:
 Name: servimatch.online
 Address: your-ec2-public-ip
 
@@ -277,8 +277,8 @@ Type Y to agree to terms
 Type Y or N for marketing emails
 Certbot will automatically configure HTTPS and 301 redirect
 
-# Or use non-interactive mode 
-# Note: Replace your-email@gmail.com and domain 
+## Or use non-interactive mode 
+## Note: Replace your-email@gmail.com and domain 
 sudo certbot --nginx \
   -d domain \
   -d www.domain \
